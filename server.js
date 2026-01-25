@@ -3,7 +3,7 @@ import 'dotenv/config'
 import express from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { sequelize, User } from './models.js'
+import { sequelize, User, Post } from './models.js'
 
 const app = express()
 app.use(express.json())
@@ -78,6 +78,36 @@ app.get('/api/users', async (req, res) => {
 		res.json(users)
 	} catch (err) {
 		res.status(500).json({ error: 'Server error' })
+	}
+})
+
+app.get('/api/posts', async (req, res) => {
+	try {
+		const posts = await Post.findAll()
+		if (posts) {
+			res.status(200).json(posts)
+		}
+	} catch (err) {
+		res.status(500).json({ err })
+	}
+})
+
+app.post('/api/posts', async (req, res) => {
+	const { title, content } = req.body
+
+	if (!title || !content) {
+		res.status(400).json({ message: "Enter all fields" })
+	}
+	
+	try {
+		const post = await Post.create({
+			title,
+			content
+		})
+
+		res.status(201).json(post)
+	} catch(err) {
+		res.status(500).json({ err })
 	}
 })
 
