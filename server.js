@@ -22,7 +22,11 @@ app.post('/api/auth/register', async (req, res) => {
 			email,
 			password: hashedPassword,
 		})
-		res.status(201).json(user)
+		res.status(201).json({
+			id: user.id,
+			username,
+			email,
+		})
 	} catch (err) {
 		res.status(400).json({ error: 'User already exists' })
 	}
