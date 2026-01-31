@@ -111,6 +111,57 @@ app.post('/api/posts', async (req, res) => {
 	}
 })
 
+app.put('/api/posts/:id', async (req, res) => {
+	const { id } = req.params
+	const { title, content } = req.body
+
+	if (!title || !content) {
+		return res.status(400).json({ message: 'Enter all fields' })
+	}
+
+	try {
+		const post = await Post.findOne({
+			where: {
+				id: parseInt(id),
+			},
+		})
+
+		if (!post) {
+			return res
+				.status(404)
+				.json({ message: 'Post not found or you have no permission' })
+		}
+
+		await post.update({ title, content })
+		res.status(200).json({ message: 'Post updated successfully', post })
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+})
+
+app.delete('/api/posts/:id', async (req, res) => {
+	const { id } = req.params
+
+	try {
+		const post = await Post.findOne({
+			where: {
+				id: parseInt(id),
+			},
+		})
+
+		if (!post) {
+			return res
+				.status(404)
+				.json({ message: 'Post not found or you have no permission' })
+		}
+
+		await post.destroy()
+		res.status(200).json({ message: 'Post deleted successfully' })
+	} catch (err) {
+		res.status(500).json({ error: err.message })
+	}
+})
+
 app.get('/profile', authenticateToken, async (req, res) => {
 	const email = req.user.email
 	const user = await User.findOne({ where: { email } })
