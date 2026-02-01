@@ -37,3 +37,18 @@ export const Post = sequelize.define('Post', {
 		allowNull: false
 	}
 })
+
+export const Comment = sequelize.define('Comment', {
+	content: {
+		type: DataTypes.STRING,
+		allowNull: false
+	},
+	userId: {
+		type: DataTypes.INTEGER,
+		allowNull: false
+	},
+	postId: {
+		type: DataTypes.INTEGER,
+		allowNull: false
+	}
+})

@@ -3,10 +3,17 @@ import 'dotenv/config'
 import express from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { sequelize, User, Post } from './models.js'
+import { sequelize, User, Post, Comment } from './models.js'
 
 const app = express()
 app.use(express.json())
+
+User.hasMany(Post, { foreignKey: 'userId' });
+User.hasMany(Comment, { foreignKey: 'userId' });
+Post.belongsTo(User, { foreignKey: 'userId' });
+Post.hasMany(Comment, { foreignKey: 'postId' });
+Comment.belongsTo(User, { foreignKey: 'userId' });
+Comment.belongsTo(Post, { foreignKey: 'postId' });
 
 app.post('/api/auth/register', async (req, res) => {
 	const { username, email, password } = req.body
@@ -105,8 +112,28 @@ app.post('/api/posts', async (req, res) => {
 			content
 		})
 
-		res.status(201).json(post)
+		res.status(201).json({ message: "Post created successfully"})
 	} catch(err) {
+		res.status(500).json({ err })
+	}
+})
+
+app.post('/api/comments', async (req, res) => {
+	const { content, userId, postId } = req.body
+
+	if (!content || !userId || !postId) {
+		res.status(400).json({ message: 'Enter all fields' })
+	}
+
+	try {
+		const comment = await Comment.create({
+			content,
+			userId,
+			postId
+		})
+
+		res.status(201).json({ message: 'Comment created successfully' })
+	} catch (err) {
 		res.status(500).json({ err })
 	}
 })
