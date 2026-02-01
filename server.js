@@ -93,6 +93,17 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
+app.get('/api/comments', async (req, res) => {
+  try {
+    const comments = await Comment.findAll();
+    if (comments) {
+      res.status(200).json(comments);
+    }
+  } catch (err) {
+    res.status(500).json({ err });
+  }
+});
+
 app.post('/api/posts', async (req, res) => {
   const { title, content } = req.body;
 
