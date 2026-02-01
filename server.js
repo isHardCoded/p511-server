@@ -9,9 +9,9 @@ import userController from './controllers/user.js';
 const app = express();
 app.use(express.json());
 
-User.hasMany(Post, { foreignKey: 'userId' });
+// User.hasMany(Post, { foreignKey: 'userId' });
 User.hasMany(Comment, { foreignKey: 'userId' });
-Post.belongsTo(User, { foreignKey: 'userId' });
+// Post.belongsTo(User, { foreignKey: 'userId' });
 Post.hasMany(Comment, { foreignKey: 'postId' });
 Comment.belongsTo(User, { foreignKey: 'userId' });
 Comment.belongsTo(Post, { foreignKey: 'postId' });
@@ -92,6 +92,22 @@ app.get('/api/posts', async (req, res) => {
     res.status(500).json({ err });
   }
 });
+
+app.get('/api/posts/:id', async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const post = await User.findByPk(id);
+
+    if (!post) {
+      res.status(400).json({ message: 'Post not found' });
+    }
+
+    res.json(post);
+  } catch {
+    res.status(500).json({ error: 'Server error' });
+  }
+})
 
 app.get('/api/comments', async (req, res) => {
   try {
