@@ -4,6 +4,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { sequelize, User, Post, Comment } from './models.js';
+import userController from './controllers/user.js';
 
 const app = express();
 app.use(express.json());
@@ -78,16 +79,8 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-app.get('/api/users', async (req, res) => {
-  try {
-    const users = await User.findAll({
-      attributes: ['id', 'username', 'email'],
-    });
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
-});
+app.get('/api/users', userController.GetAll);
+app.get('/api/users/:id', userController.GetById);
 
 app.get('/api/posts', async (req, res) => {
   try {
